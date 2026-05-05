@@ -82,7 +82,7 @@ class AddToActivityView(View):
         except AppUser.DoesNotExist:
             return JsonResponse({"message": "Invalid token"}, status=401)
 
-        Meeting.objects.create(user_id=user.username, meeting_code=meeting_code)
+        Meeting.objects.create(user=user, meeting_code=meeting_code)
         return JsonResponse({"message": "Added code to history"}, status=201)
 
 
@@ -99,11 +99,11 @@ class GetAllActivityView(View):
         except AppUser.DoesNotExist:
             return JsonResponse({"message": "Invalid token"}, status=401)
 
-        meetings = Meeting.objects.filter(user_id=user.username).order_by("-date")
+        meetings = Meeting.objects.filter(user=user).order_by("-date")
         data = [
             {
                 "id": m.id,
-                "user_id": m.user_id,
+                "user_id": m.user.username,
                 "meetingCode": m.meeting_code,
                 "date": m.date.isoformat(),
             }

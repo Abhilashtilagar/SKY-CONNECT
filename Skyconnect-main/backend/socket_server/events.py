@@ -12,6 +12,7 @@ python-socketio manager:
 
 import socketio
 import time
+from typing import Optional
 
 # ---------------------------------------------------------------------------
 # Server instance (shared across the ASGI app in skyconnect/asgi.py)
@@ -26,16 +27,16 @@ sio = socketio.AsyncServer(
 # ---------------------------------------------------------------------------
 # In-memory room / user state
 # ---------------------------------------------------------------------------
-connections: dict[str, list[str]] = {}   # room_path -> [socket_id, ...]
-messages: dict[str, list[dict]] = {}     # room_path -> [{sender, data, socket_id}]
-time_online: dict[str, float] = {}       # socket_id -> join timestamp
-usernames: dict[str, str] = {}           # socket_id -> username
+connections: dict = {}   # room_path -> [socket_id, ...]
+messages: dict = {}     # room_path -> [{sender, data, socket_id}]
+time_online: dict = {}       # socket_id -> join timestamp
+usernames: dict = {}           # socket_id -> username
 
 
 # ---------------------------------------------------------------------------
 # Helper: find the room a socket belongs to
 # ---------------------------------------------------------------------------
-def _find_room(sid: str) -> str | None:
+def _find_room(sid: str) -> Optional[str]:
     for room, members in connections.items():
         if sid in members:
             return room

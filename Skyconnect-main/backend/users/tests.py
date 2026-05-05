@@ -94,11 +94,11 @@ class MeetingHistoryViewTest(TestCase):
             content_type="application/json",
         )
         self.assertEqual(response.status_code, 201)
-        self.assertTrue(Meeting.objects.filter(user_id="carol", meeting_code="room123").exists())
+        self.assertTrue(Meeting.objects.filter(user=self.user, meeting_code="room123").exists())
 
     def test_get_all_activity(self):
-        Meeting.objects.create(user_id="carol", meeting_code="room1")
-        Meeting.objects.create(user_id="carol", meeting_code="room2")
+        Meeting.objects.create(user=self.user, meeting_code="room1")
+        Meeting.objects.create(user=self.user, meeting_code="room2")
         response = self.client.get(
             "/api/v1/users/get_all_activity",
             {"token": "test-token-carol"},

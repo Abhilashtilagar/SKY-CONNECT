@@ -29,7 +29,12 @@ class AppUser(models.Model):
 class Meeting(models.Model):
     """A meeting joined/created by a user."""
 
-    user_id = models.CharField(max_length=150)          # username of the participant
+    user = models.ForeignKey(
+        AppUser,
+        on_delete=models.CASCADE,
+        related_name="meetings",
+        db_column="user_id",
+    )
     meeting_code = models.CharField(max_length=255)
     date = models.DateTimeField(auto_now_add=True)
 
@@ -37,4 +42,4 @@ class Meeting(models.Model):
         db_table = "meeting"
 
     def __str__(self):
-        return f"{self.user_id} – {self.meeting_code}"
+        return f"{self.user.username} – {self.meeting_code}"
