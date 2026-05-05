@@ -11,12 +11,15 @@ load_dotenv()
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = os.environ.get(
-    "SECRET_KEY",
-    "django-insecure-skyconnect-change-this-in-production-secret-key"
-)
-
 DEBUG = os.environ.get("DEBUG", "True") == "True"
+
+_default_secret = "django-insecure-skyconnect-change-this-in-production-secret-key"
+SECRET_KEY = os.environ.get("SECRET_KEY", _default_secret)
+
+if not DEBUG and SECRET_KEY == _default_secret:
+    raise ValueError(
+        "SECRET_KEY environment variable must be set to a strong secret in production (DEBUG=False)."
+    )
 
 ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", "*").split(",")
 

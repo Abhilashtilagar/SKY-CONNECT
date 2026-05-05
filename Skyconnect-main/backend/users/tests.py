@@ -32,7 +32,7 @@ class RegisterViewTest(TestCase):
             data=json.dumps({"name": "Alice2", "username": "alice", "password": "secret"}),
             content_type="application/json",
         )
-        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.status_code, 409)
         self.assertIn("already exists", response.json()["message"])
 
     def test_register_missing_fields(self):

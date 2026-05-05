@@ -11,6 +11,7 @@ python-socketio manager:
 """
 
 import socketio
+import time
 
 # ---------------------------------------------------------------------------
 # Server instance (shared across the ASGI app in skyconnect/asgi.py)
@@ -50,9 +51,13 @@ async def connect(sid, environ):
     print(f"SOMETHING CONNECTED: {sid}")
 
 
-@sio.event
+@sio.on("join-call")
 async def join_call(sid, path, username=None):
-    """Client emits 'join-call' – note: python-socketio maps hyphens to underscores."""
+    """
+    Client emits 'join-call' (hyphenated).
+    python-socketio passes event names verbatim so @sio.on("join-call") is required.
+    """
+
     print(f"🔗 User joining: {username} in room: {path}")
 
     if path not in connections:
@@ -60,7 +65,6 @@ async def join_call(sid, path, username=None):
 
     connections[path].append(sid)
     usernames[sid] = username or f"User {sid[:4]}"
-    import time
     time_online[sid] = time.time()
 
     is_host = len(connections[path]) == 1
@@ -98,12 +102,6 @@ async def join_call(sid, path, username=None):
                 (msg["data"], msg["sender"], msg["socket_id"]),
                 to=sid,
             )
-
-
-@sio.on("join-call")
-async def join_call_hyphen(sid, path, username=None):
-    """Alias handler for the hyphenated event name sent by the frontend."""
-    await join_call(sid, path, username)
 
 
 @sio.event
@@ -193,7 +191,6 @@ async def dismiss_note(sid):
 
 @sio.event
 async def disconnect(sid):
-    import time
     print(f"🔌 User disconnected: {sid}")
 
     join_time = time_online.pop(sid, None)

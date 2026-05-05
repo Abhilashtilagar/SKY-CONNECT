@@ -60,7 +60,7 @@ class RegisterView(View):
             return JsonResponse({"message": "Please provide name, username and password"}, status=400)
 
         if AppUser.objects.filter(username=username).exists():
-            return JsonResponse({"message": "User already exists"}, status=302)
+            return JsonResponse({"message": "User already exists"}, status=409)
 
         hashed = bcrypt.hashpw(password.encode(), bcrypt.gensalt()).decode()
         AppUser.objects.create(name=name, username=username, password=hashed)
